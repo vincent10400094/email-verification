@@ -1,10 +1,23 @@
 // config/passport.js
 
 // load all the things we need
-var LocalStrategy   = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
+var nodemailer = require('nodemailer');
+var randomstring = require('randomstring');
 
 // load up the user model
-var User            = require('../app/models/user');
+var User = require('../app/models/user');
+var credentials = require('../credentials');
+
+var smtpTransport = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    secure: true,
+    port: 465,
+    auth: {
+        user: credentials.gmail.user,
+        pass: credentials.gmail.pass,
+    },
+});
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -59,11 +72,12 @@ module.exports = function(passport) {
 
                 // if there is no user with that email
                 // create the user
-                var newUser            = new User();
+                var newUser = new User();
 
                 // set the user's local credentials
                 newUser.local.email    = email;
                 newUser.local.password = newUser.generateHash(password);
+                newUser.local.verifyId = randomstring.generate(8);
 
                 // save the user
                 newUser.save(function(err) {
@@ -71,6 +85,7 @@ module.exports = function(passport) {
                         throw err;
                     return done(null, newUser);
                 });
+
             }
 
         });    
@@ -103,6 +118,21 @@ module.exports = function(passport) {
                 return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
 
             // all is well, return successful user
+            let link = 'http://' + req.get('host') + '/verify?id=' + user.verifyId;
+                let mailOptions = {
+                    from: 'Test <do-not-reply@infor.org>',
+                    to: user.email,
+                    subject: 'Confirm your email account',
+                    html: 'Click this link to verify your email account.<br><a href="+link+">Click here to verify</a>'
+                }
+
+                console.log(mailOptions);
+                smtpTransport.sendMail(mailOptions, function(err, res) {
+                    if(err){
+                        return console.error('Cannot send email: ' + err);
+                    }
+                    console.log('Mail sent: ' + res.message);
+                });
             return done(null, user);
         });
 
