@@ -22,9 +22,6 @@ var smtpTransport = nodemailer.createTransport({
 // expose this function to our app using module.exports
 module.exports = function(passport) {
 
-    // =========================================================================
-    // passport session setup ==================================================
-    // =========================================================================
     // required for persistent login sessions
     // passport needs ability to serialize and unserialize users out of session
 
@@ -40,9 +37,6 @@ module.exports = function(passport) {
         });
     });
 
-    // =========================================================================
-    // LOCAL SIGNUP ============================================================
-    // =========================================================================
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
 
@@ -77,7 +71,6 @@ module.exports = function(passport) {
                 // set the user's local credentials
                 newUser.local.email    = email;
                 newUser.local.password = newUser.generateHash(password);
-                newUser.local.isVerified = false;
                 newUser.local.verifyId = randomstring.generate(8);
 
                 let link = 'http://' + req.get('host') + '/verify?id=' + newUser.local.verifyId;
