@@ -77,7 +77,25 @@ module.exports = function(passport) {
                 // set the user's local credentials
                 newUser.local.email    = email;
                 newUser.local.password = newUser.generateHash(password);
+                newUser.local.isVerified = false;
                 newUser.local.verifyId = randomstring.generate(8);
+
+                let link = 'http://' + req.get('host') + '/verify?id=' + newUser.local.verifyId;
+                let mailOptions = {
+                    from: 'Test <do-not-reply@infor.org>',
+                    to: newUser.local.email,
+                    subject: 'Confirm your email account',
+                    html: 'Click this link to verify your email account.<br><a href="'+link+'">Click here to verify</a>'
+                }
+
+                console.log(mailOptions);
+
+                smtpTransport.sendMail(mailOptions, function(err, res) {
+                    if(err){
+                        return console.error('Cannot send email: ' + err);
+                    }
+                    console.log('Mail sent: ' + newUser.local.email);
+                });
 
                 // save the user
                 newUser.save(function(err) {
@@ -118,21 +136,7 @@ module.exports = function(passport) {
                 return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
 
             // all is well, return successful user
-            let link = 'http://' + req.get('host') + '/verify?id=' + user.verifyId;
-                let mailOptions = {
-                    from: 'Test <do-not-reply@infor.org>',
-                    to: user.email,
-                    subject: 'Confirm your email account',
-                    html: 'Click this link to verify your email account.<br><a href="+link+">Click here to verify</a>'
-                }
-
-                console.log(mailOptions);
-                smtpTransport.sendMail(mailOptions, function(err, res) {
-                    if(err){
-                        return console.error('Cannot send email: ' + err);
-                    }
-                    console.log('Mail sent: ' + res.message);
-                });
+            
             return done(null, user);
         });
 

@@ -12,28 +12,31 @@ module.exports = function(app, passport) {
 
     app.get('/verify', function (req, res) {
 
-        console.log(req.protocol + '://' + req.get('host'));
-        if(req.protocol + '://' + req.get('host') == 'http://' + host){
-            console.log('Domain is matched. Information is from Authentic email');
-            User.findOne({ 'local.verifyId' : req.query.id }, function(err, user){
+        // if(req.protocol + '://' + req.get('host') == 'http://' + host){
+            // console.log('Domain is matched. Information is from Authentic email');
+            User.update({ 'local.verifyId' : req.query.id }, { 'local.isVerified' : true }, function(err){
                 if(err){
-                    res.render('login.ejs', { message: req.flash('Something went wrong.') });
-                }
-
-                if(user){
-                    console.log(user.local.email + ' verified');
-                    user.update();
-                    res.render('login.ejs', { message: req.flash('Successfully verified now login again.') });
+                    // res.render('login.ejs', { message: req.flash('Something went wrong.') });
+                    console.log('Something went wrong: ' + err);
+                    res.redirect('/');
                 }
                 else{
-                    console.log(user.local.email + ' not found');
-                    res.render('login.ejs', { message: req.flash('Verify failed.') });
+                    console.log('verified');
+                    // User.update();
+                    // user.local.isVerified = true;
+                    res.redirect('/');
+                    // res.render('login.ejs', { message: req.flash('Successfully verified now login again.') });
                 }
+                // else{
+                //     console.log(' not found');
+                //     res.redirect('/');
+                //     // res.render('login.ejs', { message: req.flash('Verify failed.') });
+                // }
             });
-        }
-        else{
-            res.render('login.ejs', { message: req.flash("Domin doesn't match")});
-        }
+        // }
+        // else{
+        //     res.render('login.ejs', { message: req.flash("Domin doesn't match")});
+        // }
 
     })
 
