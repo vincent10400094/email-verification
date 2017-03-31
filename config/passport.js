@@ -141,15 +141,18 @@ module.exports = function(passport) {
     passport.use('facebook-login', new FacebookStrategy({
 
         // pull in our app id and secret from our auth.js file
-        clientID    : credentials.facebookAuth.ID,
-        clientSecret: credentials.facebookAuth.Secret,
-        callbackURL : credentials.facebookAuth.callbackURL,
+        clientID            : credentials.facebookAuth.ID,
+        clientSecret        : credentials.facebookAuth.Secret,
+        callbackURL         : credentials.facebookAuth.callbackURL,
+        // passReqToCallback   : true, 
+        // profileFields       : ['id', 'name', 'emails'],
 
     },
 
     // facebook will send back the token and profile
     function(token, refreshToken, profile, done) {
 
+        console.log('call facebook-login');
         // asynchronous
         process.nextTick(function() {
 
@@ -166,7 +169,7 @@ module.exports = function(passport) {
                     return done(null, user); // user found, return that user
                 } else {
                     // if there is no user found with that facebook id, create them
-                    var newUser            = new User();
+                    var newUser = new User();
 
                     // set all of the facebook information in our user model
                     newUser.facebook.id    = profile.id; // set the users facebook id                   
