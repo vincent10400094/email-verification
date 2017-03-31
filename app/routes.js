@@ -12,7 +12,10 @@ module.exports = function(app, passport) {
             User.update({ 'local.verifyId' : req.query.id }, { 'local.isVerified' : true }, function(err){
 
                 if(err){
+<<<<<<< HEAD
 
+=======
+>>>>>>> a2fa4d277f242f8eac4125de7d087e6655529e81
                     console.log('Something went wrong: ' + err);
                     res.redirect('/');
                 }
@@ -74,7 +77,7 @@ module.exports = function(app, passport) {
     app.get('/auth/facebook', passport.authenticate('facebook-login', { scope : 'email' }));
 
     // handle the callback after facebook has authenticated the user
-    app.get('/auth/facebook/callback', passport.authenticate('facebook', 
+    app.get('/auth/facebook/callback', passport.authenticate('facebook-login', 
         {
             successRedirect : '/profile',
             failureRedirect : '/'
