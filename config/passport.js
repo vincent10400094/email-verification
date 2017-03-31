@@ -145,7 +145,7 @@ module.exports = function(passport) {
         clientSecret        : credentials.facebookAuth.Secret,
         callbackURL         : credentials.facebookAuth.callbackURL,
         // passReqToCallback   : true, 
-        // profileFields       : ['id', 'name', 'emails'],
+        profileFields       : ['id', 'name', 'gender', 'email'],
 
     },
 
@@ -154,8 +154,8 @@ module.exports = function(passport) {
 
         // console.log('call facebook-login');
         console.log('token: ', token);
-        console.log('token: ', refreshToken);
-        console.log('token: ', profile);
+        console.log('refreshToken: ', refreshToken);
+        console.log('profile: ', profile);
         // asynchronous
         process.nextTick(function() {
 
@@ -177,7 +177,7 @@ module.exports = function(passport) {
                     // set all of the facebook information in our user model
                     newUser.facebook.id    = profile.id; // set the users facebook id                   
                     newUser.facebook.token = token; // we will save the token that facebook provides to the user                    
-                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                    newUser.facebook.name  = profile.displayName; // look at the passport user profile to see how names are returned
                     // newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
 
                     // save our user to the database
