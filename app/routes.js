@@ -3,46 +3,28 @@ var User = require('../app/models/user');
 
 module.exports = function(app, passport) {
 
-    // =====================================
-    // HOME PAGE (with login links) ========
-    // =====================================
     app.get('/', function(req, res) {
         res.render('index.ejs'); // load the index.ejs file
     });
 
     app.get('/verify', function (req, res) {
 
-        // if(req.protocol + '://' + req.get('host') == 'http://' + host){
-            // console.log('Domain is matched. Information is from Authentic email');
             User.update({ 'local.verifyId' : req.query.id }, { 'local.isVerified' : true }, function(err){
+
                 if(err){
-                    // res.render('login.ejs', { message: req.flash('Something went wrong.') });
+
                     console.log('Something went wrong: ' + err);
                     res.redirect('/');
                 }
                 else{
+
                     console.log('verified');
-                    // User.update();
-                    // user.local.isVerified = true;
                     res.redirect('/');
-                    // res.render('login.ejs', { message: req.flash('Successfully verified now login again.') });
                 }
-                // else{
-                //     console.log(' not found');
-                //     res.redirect('/');
-                //     // res.render('login.ejs', { message: req.flash('Verify failed.') });
-                // }
             });
-        // }
-        // else{
-        //     res.render('login.ejs', { message: req.flash("Domin doesn't match")});
-        // }
 
     })
 
-    // =====================================
-    // LOGIN ===============================
-    // =====================================
     // show the login form
     app.get('/login', function(req, res) {
 
@@ -53,9 +35,6 @@ module.exports = function(app, passport) {
     // process the login form
     // app.post('/login', do all our passport stuff here);
 
-    // =====================================
-    // SIGNUP ==============================
-    // =====================================
     // show the signup form
     app.get('/signup', function(req, res) {
 
@@ -66,9 +45,6 @@ module.exports = function(app, passport) {
     // process the signup form
     // app.post('/signup', do all our passport stuff here);
 
-    // =====================================
-    // PROFILE SECTION =====================
-    // =====================================
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function(req, res) {
@@ -77,9 +53,6 @@ module.exports = function(app, passport) {
         });
     });
 
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
     app.get('/logout', function(req, res) {
         req.logout();
         res.redirect('/');
@@ -96,6 +69,16 @@ module.exports = function(app, passport) {
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
+
+    // route for facebook authentication and login
+    app.get('/auth/facebook', passport.authenticate('facebook-login', { scope : 'email' }));
+
+    // handle the callback after facebook has authenticated the user
+    app.get('/auth/facebook/callback', passport.authenticate('facebook', 
+        {
+            successRedirect : '/profile',
+            failureRedirect : '/'
+        }));
     
 };
 
