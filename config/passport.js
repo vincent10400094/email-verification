@@ -6,8 +6,6 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 
 var nodemailer = require('nodemailer');
 var randomstring = require('randomstring');
-var fs = require('fs');
-var request = require('request');
 
 // load up the user model
 var User = require('../app/models/user');
@@ -22,15 +20,6 @@ var smtpTransport = nodemailer.createTransport({
         pass: credentials.gmail.pass,
     },
 });
-
-var download = function(uri, filename, callback){
-  request.head(uri, function(err, res, body){
-    console.log('content-type:', res.headers['content-type']);
-    console.log('content-length:', res.headers['content-length']);
-
-    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-  });
-};
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -191,13 +180,7 @@ module.exports = function(passport) {
                     newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                     newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
                     newUser.facebook.gender = profile.gender;
-
-                    // var profile_pic_link = "graph.facebook.com/"; + profile.id + "/picture" + "?width=200&height=200" + "&access_token=" + token;
-                    // console.log('pic_link: ' + profile_pic_link);
-
-                    // download(profile_pic_link, profile.username + '.png', function(){
-                    //   console.log('save profile picture done: ' + profile.username);
-                    // });
+                    newUser.facebook.picture = profile.photos.value;
 
                     // save our user to the database
                     newUser.save(function(err) {
