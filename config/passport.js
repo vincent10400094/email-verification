@@ -156,7 +156,7 @@ module.exports = function(passport) {
         clientSecret        : credentials.facebookAuth.Secret,
         callbackURL         : credentials.facebookAuth.callbackURL,
         // passReqToCallback   : true, 
-        profileFields       : ['id', 'name', 'gender', 'email'],
+        profileFields       : ['id', 'name', 'gender', 'email', 'photos'],
 
     },
 
@@ -192,12 +192,12 @@ module.exports = function(passport) {
                     newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
                     newUser.facebook.gender = profile.gender;
 
-                    var profile_pic_link = "graph.facebook.com/"; + profile.id + "/picture" + "?width=200&height=200" + "&access_token=" + token;
-                    console.log('pic_link: ' + profile_pic_link);
+                    // var profile_pic_link = "graph.facebook.com/"; + profile.id + "/picture" + "?width=200&height=200" + "&access_token=" + token;
+                    // console.log('pic_link: ' + profile_pic_link);
 
-                    download(profile_pic_link, profile.username + '.png', function(){
-                      console.log('save profile picture done: ' + profile.username);
-                    });
+                    // download(profile_pic_link, profile.username + '.png', function(){
+                    //   console.log('save profile picture done: ' + profile.username);
+                    // });
 
                     // save our user to the database
                     newUser.save(function(err) {
