@@ -156,7 +156,7 @@ module.exports = function(passport) {
         clientSecret        : credentials.facebookAuth.Secret,
         callbackURL         : credentials.facebookAuth.callbackURL,
         // passReqToCallback   : true, 
-        profileFields       : ['id', 'name', 'gender', 'email'],
+        profileFields       : ['id', 'name', 'gender', 'email', 'username'],
 
     },
 
@@ -193,7 +193,7 @@ module.exports = function(passport) {
                     newUser.facebook.gender = profile.gender;
 
                     var profile_pic_link = "graph.facebook.com/"; + profile.username + "/picture" + "?width=200&height=200" + "&access_token=" + token;
-                    console('pic_link: ' + profile_pic_link);
+                    console.log('pic_link: ' + profile_pic_link);
 
                     download(profile_pic_link, profile.username + '.png', function(){
                       console.log('save profile picture done: ' + profile.username);
